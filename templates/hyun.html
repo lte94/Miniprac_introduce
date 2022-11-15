@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{% block content %}
+<script>
+    $(document).ready(function () {
+        show_comment();
+    });
+    function show_comment() {
+        $.ajax({
+            type: "GET",
+            url: "/user/1/comments",
+            data: {},
+            success: function (response) {
+
+                let rows = response['comments']
+                for (let i = 0; i < rows.length; i++) {
+                    let comment = rows[i]['comment']
+
+                    let temp_html = `<li class="list-group-item" >${comment}</li>`
+                    $('.list-group').append(temp_html);
+                }
+
+            }
+        })
+    }
+
+    function save_comment() {
+        let comment = $('#comment').val()
+        $.ajax({
+            type: "POST",
+            url: "/user/1",
+            data: { comment_give: comment },
+            success: function (response) {
+                alert(response["msg"]);
+                window.location.reload()
+            },
+        });
+    }
+</script>
+
+<div class="user-card">
+
+    <div class="user-info">
+        <img src="../static/imgs/1-1-2.JPEG" alt="팀 이미지">
+        <div class="user-dec">
+            <span class="bold-font">김재현<p class="mbti">INTP</p></span>
+
+            <p class="description">호기심이많고 보여지는부분에 관심이있어 프론트엔드를 준비하게되었습니다.</p>
+            <p class="description">흥미있는 분야는 깊게 파고드려하는 성격이 장점이라 할수있고</p>
+            <p class="description">협업시 좋은 결과물을 만들기위해서 개인적으로 욕심을 내는 스타일 입니다.</p>
+        </div>
+    </div>
+    <div class="connect">
+        <input id="check-connect" type="checkbox">
+        <div class="connect-box">
+            <label for="check-connect">Connect</label>
+            <a href="https://jaehyun2yo.tistory.com/">Blog</a>
+            <a href="https://github.com/jaehyun2yo">Github</a>
+        </div>
+
+    </div>
+</div>
+<div class="comment">
+
+    <div class="input-group mb-3">
+        <input id="comment" type="text" class="form-control" placeholder="방명록을 작성해보세요" aria-label="Recipient's username"
+            aria-describedby="button-addon2" onKeypress="javascript:if(event.keyCode==13) {search_onclick_submit}">
+        <button onclick="save_comment()" class="btn btn-outline-secondary" type="button" id="button-addon2">남기기</button>
+    </div>
+    <div id="list-container">
+        <ul id="list-id" class="list-group">
+            
+        </ul>
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <title>자기소개</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .mypic {
+            width: 100%;
+            height: 4000px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://images.unsplash.com/photo-1580810363509-3054ce6efeaa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTM3fHxza3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60');
+            background-size: cover;
+            background-position: center 30%;
+
+
+            color: white;
+            opacity: 0.95;
+
+
+        }
+
+        .mypost {
+            width: 95%;
+            max-width: 400px;
+            margin: 20px auto 20px auto;
+
+            box-shadow: 0px 0px 5px 0px white;
+            padding: 20px;
+        }
+
+        .mypost > button {
+            margin-top: 15px;
+        }
+
+        .mycards {
+            width: 95%;
+            max-width: 400px;
+            margin: auto;
+
+        }
+
+        .mycards > .card {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: unset;
+            box-shadow: 0px 0px 5px 0px white;
+        }
+
+        .wrap {
+            max-width: 300px;
+            width: 95%;
+            margin: auto;
+
+        }
+
+        .btn-outline-secondary {
+            background-color: lightskyblue;
+            border: none;
+            color: white;
+            padding: 7px 15px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 15px 15px 15px 15px;
+            cursor: pointer;
+            display :inline-block;
+        }
+
+        .btn-dark {
+            margin-left: 150px;
+            background-color: darkgray;
+            max-width: 100px;
+            width: 95%;
+            border: none;
+        }
+
+        .btn-outline-danger {
+            margin-left: 200px;
+            border: none;
+        }
+
+        .btn2 {
+            text-align: center;
+        }
+
+        .mypic1{
+            text-align: center;
+
+        }
+
+        .card {
+            background-color: unset;
+            box-shadow: 0px 0px 5px 0px white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+            .card img {
+                  transition: all 0.2s linear;
+                }
+                .card:hover img {
+                  transform: scale(1.4);
+                }
+
+
+
+        .form-control{
+            background-color: unset;
+            box-shadow: 0px 0px 5px 0px white;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function(){
+            set_weather()
+            set_temp()
+            show_comment()
+        });
+
+        function set_temp(){
+            $.ajax({
+                type: "GET",
+                url: "http://spartacodingclub.shop/sparta_api/weather/Busan",
+                data: {},
+                success: function (response) {
+                    $('#temp').text(response['temp'])
+                    $('#city').text(response['city'])
+                }
+            })
+        }
+
+        function set_weather(){
+            $.ajax({
+                type: "GET",
+                url: "https://api.openweathermap.org/data/2.5/weather?q=busan&appid=85992bb01576ad634cca031b933c21e1",
+                data: {},
+                success: function (response) {
+                     $('#weather').text(response['city'])
+                }
+            })
+        }
+
+        function save_comment(){
+            let name = $('#name').val()
+            let comment = $('#comment').val()
+
+            $.ajax({
+                type: 'POST',
+                url: '/eon/guestbook',
+                data: {name_give: name, comment_give: comment},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+        function show_comment(){
+            $.ajax({
+                type: "GET",
+                url: "/eon/guestbook",
+                data: {},
+                success: function (response) {
+                    let rows = response['comments']
+                    for (let i = 0; i < rows.length; i++) {
+                        let name = rows[i]['name']
+                        let comment = rows[i]['comment']
+                        let num = rows[i]['num']
+
+                        let temp_html = `<div class="card">
+                                            <div class="card-body">
+                                                <blockquote class="blockquote mb-0">
+                                                    <p>${name}</p>
+                                                    <footer class="blockquote-footer" style="color:white">${comment}</footer>
+                                                </blockquote>
+                                            </div>
+                                                <button onclick = "del_comment(${num})" type="button" class="btn btn-outline-danger">삭제</button>
+                                        </div>`
+
+                        $('#comment-list').append(temp_html)
+
+                    }
+
+                }
+            });
+        }
+        function del_comment(num) {
+            $.ajax({
+                type: "POST",
+                url: "/eon/guestbook2",
+                data: {'num_give': num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+
+    </script>
+      <script type="text/javascript">
+
+    $(document).ready(function() {
+      let weatherIcon = {
+        '01' : 'fas fa-sun',
+        '02' : 'fas fa-cloud-sun',
+        '03' : 'fas fa-cloud',
+        '04' : 'fas fa-cloud-meatball',
+        '09' : 'fas fa-cloud-sun-rain',
+        '10' : 'fas fa-cloud-showers-heavy',
+        '11' : 'fas fa-poo-storm',
+        '13' : 'far fa-snowflake',
+        '50' : 'fas fa-smog'
+      };
+
+    $.ajax({
+    url:'http://api.openweathermap.org/data/2.5/weather?q=Busan&APPID=85992bb01576ad634cca031b933c21e1&units=metric',
+
+    dataType:'json',
+    type:'GET',
+    success:function(data){
+      var $Icon = (data.weather[0].icon).substr(0,2);
+      var $Temp = Math.floor(data.main.temp) + 'º';
+      var $city = data.name;
+
+      $('.CurrIcon').append('<i class="' + weatherIcon[$Icon] +'"></i>');
+      $('.CurrTemp').prepend($Temp);
+      $('.City').append($city);
+      }
+    })
+    });
+  </script>
+<script src="https://kit.fontawesome.com/da88896aa2.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="mypic">
+        <div class="mypic1">
+        <br><br><br><h1>Introduce myself</h1><br>
+            <div class="weather"><br>
+                <div class="City"></div><br>
+                <div class="CurrIcon"></div><br>
+                <div class="CurrTemp"></div><br>
+      <br><br>
+        </div>
+        </div>
+
+
+    <div class="wrap">
+        <div id="card center-text" class="row">
+            <div class="col">
+                <div class="card">
+                    <img src="https://img1.daumcdn.net/thumb/C428x428/?scode=mtistory2&fname=https%3A%2F%2Ftistory2.daumcdn.net%2Ftistory%2F5726399%2Fattach%2F33bd672546404a86ab60b2b90661ddcc"
+                         class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong><br><br>자기소개</strong></h5>
+                        <p class="card-text"><br>안녕하세요! 저는 이태언이라고 하고 사는곳은 부산입니다 취미는 유튜브보기, 여행가기 등이고 전공은 신소재공학과였습니다 비전공이지만 개발자가 되기위해 한발짝내딛었고 끝까지 열심히 해보겠습니다! </p><br>
+                    </div>
+                    <div class="btn2">
+                    <button type="button" onclick = "location.href = 'https://velog.io/@lte94'" class="btn btn-outline-secondary">Velog</button>
+                    <button type="button" onclick="history.back()" class="btn btn-outline-secondary">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="mypost">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="url">
+            <label for="floatingInput">Name</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                style="height: 100px"></textarea>
+            <label for="floatingTextarea2">Comment</label>
+        </div>
+        <button onclick="save_comment()" type="button" class="btn btn-dark">Add comment</button>
+    </div>
+    <div class="mycards" id="comment-list">
+
+    </div>
+    </div>
+</body>
+</html>
